@@ -5,5 +5,6 @@ const typeParse = (type) => {
 };
 
 module.exports = {
+  list,
   typeParse,
 };
