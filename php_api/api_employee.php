@@ -10,7 +10,7 @@ $action = $_POST['action'] ?? null;
 
 // ตรวจสอบว่าเป็นการส่งข้อมูลแบบ POST และมีการระบุ action
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action) {
-    switch($action) {
+    switch ($action) {
 
         // กรณีเพิ่มพนักงาน
         case 'add':
@@ -136,7 +136,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action) {
             echo json_encode(["error" => "Action ไม่ถูกต้อง"]);
             break;
     }
-
 } else {
     // ถ้าเป็นการ GET, ดึงข้อมูลพนักงานทั้งหมด
     $stmt = $conn->prepare("SELECT * FROM employee ORDER BY employee_id ASC");
@@ -147,4 +146,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action) {
         echo json_encode(["success" => false, "data" => []]);
     }
 }
-?>
