@@ -22,6 +22,7 @@
         <tr>
           <th>ID</th>
           <th>ชื่อสินค้า</th>
+          <th>ประเภทสินค้า</th>
           <th>รายละเอียด</th>
           <th>ราคา</th>
           <th>จำนวน</th>
@@ -33,6 +34,7 @@
         <tr v-for="product in paginatedProducts" :key="product.product_id">
           <td>{{ product.product_id }}</td>
           <td>{{ product.product_name }}</td>
+          <td>{{ typeParse(product.product_type) }}</td>
           <td>{{ product.description }}</td>
           <td>{{ product.price }}</td>
           <td>{{ product.stock }}</td>
@@ -44,10 +46,16 @@
             />
           </td>
           <td>
-            <button class="btn btn-warning btn-sm me-2" @click="openEditModal(product)">
+            <button
+              class="btn btn-warning btn-sm me-2"
+              @click="openEditModal(product)"
+            >
               <i class="bi bi-pencil-square"></i> แก้ไข
             </button>
-            <button class="btn btn-danger btn-sm" @click="deleteProduct(product.product_id)">
+            <button
+              class="btn btn-danger btn-sm"
+              @click="deleteProduct(product.product_id)"
+            >
               <i class="bi bi-trash3"></i> ลบ
             </button>
           </td>
@@ -85,26 +93,69 @@
       <div class="modal-dialog modal-md">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">{{ isEditMode ? "แก้ไขสินค้า" : "เพิ่มสินค้าใหม่" }}</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            <h5 class="modal-title">
+              {{ isEditMode ? "แก้ไขสินค้า" : "เพิ่มสินค้าใหม่" }}
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
           </div>
           <div class="modal-body">
             <form @submit.prevent="saveProduct">
               <div class="mb-3">
                 <label class="form-label">ชื่อสินค้า</label>
-                <input v-model="editForm.product_name" type="text" class="form-control" required />
+                <input
+                  v-model="editForm.product_name"
+                  type="text"
+                  class="form-control"
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <!-- <input  type="text" class="form-control" required /> -->
+
+                <div class="form-floating">
+                  <select
+                    class="form-select"
+                    id="floatingSelect"
+                    aria-label="ประเภทสินค้า"
+                    v-model="editForm.product_type"
+                  >
+                    <option selected>เลือกประเภทสินค้า</option>
+                    <option value="1">เนื้อสัตว์</option>
+                    <option value="2">ผัก</option>
+                    <option value="3">เครื่องดื่ม</option>
+                  </select>
+                  <label for="floatingSelect">ประเภทสินค้า</label>
+                </div>
               </div>
               <div class="mb-3">
                 <label class="form-label">รายละเอียด</label>
-                <textarea v-model="editForm.description" class="form-control"></textarea>
+                <textarea
+                  v-model="editForm.description"
+                  class="form-control"
+                ></textarea>
               </div>
               <div class="mb-3">
                 <label class="form-label">ราคา</label>
-                <input v-model="editForm.price" type="number" step="0.01" class="form-control" required />
+                <input
+                  v-model="editForm.price"
+                  type="number"
+                  step="0.01"
+                  class="form-control"
+                  required
+                />
               </div>
               <div class="mb-3">
                 <label class="form-label">จำนวน</label>
-                <input v-model="editForm.stock" type="number" class="form-control" required />
+                <input
+                  v-model="editForm.stock"
+                  type="number"
+                  class="form-control"
+                  required
+                />
               </div>
 
               <div class="mb-3">
@@ -118,7 +169,10 @@
                 <div v-if="isEditMode && editForm.image">
                   <p class="mt-2">รูปเดิม:</p>
                   <img
-                    :src="'http://localhost/MK_SHOP/php_api/uploads/' + editForm.image"
+                    :src="
+                      'http://localhost/MK_SHOP/php_api/uploads/' +
+                      editForm.image
+                    "
                     width="100"
                   />
                 </div>
@@ -138,6 +192,8 @@
 <script>
 import { ref, onMounted, computed, watch } from "vue";
 
+import {typeParse} from "@/modules/typeParser";
+
 export default {
   name: "ProductList",
   setup() {
@@ -148,10 +204,11 @@ export default {
     const editForm = ref({
       product_id: null,
       product_name: "",
+      product_type: "",
       description: "",
       price: "",
       stock: "",
-      image: ""
+      image: "",
     });
     const newImageFile = ref(null);
     let modalInstance = null;
@@ -189,7 +246,9 @@ export default {
     // โหลดข้อมูล
     const fetchProducts = async () => {
       try {
-        const res = await fetch("http://localhost/MK_SHOP/php_api/api_product.php");
+        const res = await fetch(
+          "http://localhost/MK_SHOP/php_api/api_product.php"
+        );
         const data = await res.json();
         products.value = data.success ? data.data : [];
       } catch (err) {
@@ -204,10 +263,11 @@ export default {
       editForm.value = {
         product_id: null,
         product_name: "",
+        product_type: "",
         description: "",
         price: "",
         stock: "",
-        image: ""
+        image: "",
       };
       newImageFile.value = null;
       const modalEl = document.getElementById("editModal");
@@ -233,18 +293,23 @@ export default {
     const saveProduct = async () => {
       const formData = new FormData();
       formData.append("action", isEditMode.value ? "update" : "add");
-      if (isEditMode.value) formData.append("product_id", editForm.value.product_id);
+      if (isEditMode.value)
+        formData.append("product_id", editForm.value.product_id);
       formData.append("product_name", editForm.value.product_name);
+      formData.append("product_type", editForm.value.product_type);
       formData.append("description", editForm.value.description);
       formData.append("price", editForm.value.price);
       formData.append("stock", editForm.value.stock);
       if (newImageFile.value) formData.append("image", newImageFile.value);
 
       try {
-        const res = await fetch("http://localhost/MK_SHOP/php_api/api_product.php", {
-          method: "POST",
-          body: formData
-        });
+        const res = await fetch(
+          "http://localhost/MK_SHOP/php_api/api_product.php",
+          {
+            method: "POST",
+            body: formData,
+          }
+        );
         const result = await res.json();
         if (result.message) {
           alert(result.message);
@@ -266,10 +331,13 @@ export default {
       formData.append("product_id", id);
 
       try {
-        const res = await fetch("http://localhost/MK_SHOP/php_api/api_product.php", {
-          method: "POST",
-          body: formData
-        });
+        const res = await fetch(
+          "http://localhost/MK_SHOP/php_api/api_product.php",
+          {
+            method: "POST",
+            body: formData,
+          }
+        );
         const result = await res.json();
         if (result.message) {
           alert(result.message);
@@ -303,8 +371,10 @@ export default {
       itemsPerPage,
       goToPage,
       nextPage,
-      prevPage
+      prevPage,
+
+      typeParse
     };
-  }
+  },
 };
 </script>

@@ -6,10 +6,11 @@ $action = $_POST['action'] ?? null;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action) {
     // เพิ่ม / แก้ไข / ลบ
-    switch($action) {
+    switch ($action) {
 
         case 'add':
             $product_name = $_POST['product_name'];
+            $product_type = $_POST['product_type'];
             $description = $_POST['description'];
             $price = $_POST['price'];
             $stock = $_POST['stock'];
@@ -26,10 +27,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action) {
                 move_uploaded_file($_FILES['image']['tmp_name'], $targetFile);
             }
 
-            $sql = "INSERT INTO products (product_name, description, price, stock, image)
-                    VALUES (:product_name, :description, :price, :stock, :image)";
+            $sql = "INSERT INTO products (product_name, product_type, description, price, stock, image)
+                    VALUES (:product_name, :product_type, :description, :price, :stock, :image)";
             $stmt = $conn->prepare($sql);
             $stmt->bindParam(':product_name', $product_name);
+            $stmt->bindParam(':product_type', $product_type);
             $stmt->bindParam(':description', $description);
             $stmt->bindParam(':price', $price);
             $stmt->bindParam(':stock', $stock);
@@ -45,6 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action) {
         case 'update':
             $product_id = $_POST['product_id'];
             $product_name = $_POST['product_name'];
+            $product_type = $_POST['product_type'];
             $description = $_POST['description'];
             $price = $_POST['price'];
             $stock = $_POST['stock'];
@@ -62,6 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action) {
 
             $sql = "UPDATE products SET 
                         product_name = :product_name,
+                        product_type = :product_type,
                         description = :description,
                         price = :price,
                         stock = :stock
@@ -70,6 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action) {
             $stmt = $conn->prepare($sql);
 
             $stmt->bindParam(':product_name', $product_name);
+            $stmt->bindParam(':product_type', $product_type);
             $stmt->bindParam(':description', $description);
             $stmt->bindParam(':price', $price);
             $stmt->bindParam(':stock', $stock);
@@ -83,40 +88,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action) {
             }
             break;
 
-      case 'delete':
-    $product_id = $_POST['product_id'];
+        case 'delete':
+            $product_id = $_POST['product_id'];
 
-    // 🔍 ดึงชื่อไฟล์รูปจากฐานข้อมูลก่อนลบ
-    $stmt = $conn->prepare("SELECT image FROM products WHERE product_id = :product_id");
-    $stmt->bindParam(':product_id', $product_id);
-    $stmt->execute();
-    $product = $stmt->fetch(PDO::FETCH_ASSOC);
+            // 🔍 ดึงชื่อไฟล์รูปจากฐานข้อมูลก่อนลบ
+            $stmt = $conn->prepare("SELECT image FROM products WHERE product_id = :product_id");
+            $stmt->bindParam(':product_id', $product_id);
+            $stmt->execute();
+            $product = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if ($product && !empty($product['image'])) {
-        $filePath = "uploads/" . $product['image'];
-        // 🧹 ลบไฟล์รูปถ้ามีอยู่จริง
-        if (file_exists($filePath)) {
-            unlink($filePath);
-        }
-    }
+            if ($product && !empty($product['image'])) {
+                $filePath = "uploads/" . $product['image'];
+                // 🧹 ลบไฟล์รูปถ้ามีอยู่จริง
+                if (file_exists($filePath)) {
+                    unlink($filePath);
+                }
+            }
 
-    // 🔥 ลบข้อมูลสินค้าออกจากฐานข้อมูล
-    $stmt = $conn->prepare("DELETE FROM products WHERE product_id = :product_id");
-    $stmt->bindParam(':product_id', $product_id);
+            // 🔥 ลบข้อมูลสินค้าออกจากฐานข้อมูล
+            $stmt = $conn->prepare("DELETE FROM products WHERE product_id = :product_id");
+            $stmt->bindParam(':product_id', $product_id);
 
-    if ($stmt->execute()) {
-        echo json_encode(["message" => "ลบสินค้าสำเร็จ และลบรูปภาพออกจากโฟลเดอร์แล้ว"]);
-    } else {
-        echo json_encode(["error" => "ลบสินค้าล้มเหลว"]);
-    }
-    break;
+            if ($stmt->execute()) {
+                echo json_encode(["message" => "ลบสินค้าสำเร็จ และลบรูปภาพออกจากโฟลเดอร์แล้ว"]);
+            } else {
+                echo json_encode(["error" => "ลบสินค้าล้มเหลว"]);
+            }
+            break;
 
 
         default:
             echo json_encode(["error" => "Action ไม่ถูกต้อง"]);
             break;
     }
-
 } else {
     // GET: ดึงข้อมูลสินค้า
     $stmt = $conn->prepare("SELECT * FROM products ORDER BY product_id DESC");
@@ -127,4 +131,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action) {
         echo json_encode(["success" => false, "data" => []]);
     }
 }
-?>
