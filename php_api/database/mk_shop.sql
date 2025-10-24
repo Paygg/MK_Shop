@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Generation Time: Oct 23, 2025 at 05:10 AM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.1.25
+-- Host: localhost
+-- Generation Time: Oct 24, 2025 at 04:53 PM
+-- Server version: 10.4.28-MariaDB
+-- PHP Version: 8.2.4
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -38,7 +38,26 @@ CREATE TABLE `admin` (
 --
 
 INSERT INTO `admin` (`id`, `username`, `password`) VALUES
-(1, 'admin', '1234');
+(1, 'dethz', 'detzz198');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `employee`
+--
+
+CREATE TABLE `employee` (
+  `id` int(11) NOT NULL,
+  `username` varchar(50) NOT NULL,
+  `password` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `employee`
+--
+
+INSERT INTO `employee` (`id`, `username`, `password`) VALUES
+(1, 'george', 'detzz198');
 
 -- --------------------------------------------------------
 
@@ -146,6 +165,7 @@ INSERT INTO `order_items` (`id`, `order_id`, `product_id`, `quantity`, `price`, 
 CREATE TABLE `products` (
   `product_id` int(11) NOT NULL,
   `product_name` varchar(100) NOT NULL,
+  `product_type` int(3) NOT NULL COMMENT '1 = meat\r\n2 = vegetable\r\n3 = drinks',
   `description` text DEFAULT NULL,
   `price` decimal(10,2) NOT NULL,
   `image` text DEFAULT NULL,
@@ -157,16 +177,16 @@ CREATE TABLE `products` (
 -- Dumping data for table `products`
 --
 
-INSERT INTO `products` (`product_id`, `product_name`, `description`, `price`, `image`, `stock`, `created_at`) VALUES
-(8, 'ชุดผักรวม ชื่นใจ', 'ชุดผักรวมและหมู ชื่นใจ', 280.00, '1761182155_1761180238_3.jfif', 20, '2025-09-11 03:36:39'),
-(9, 'หมูเนื้อแดงรวมผัก', 'ชุด 1 หมูเนื้อแดงรวมผักสด', 250.00, '1761182114_1758077855_p5.jpg', 50, '2025-09-17 02:57:35'),
-(10, 'ชุด 2 ลูกชิ้น + หมูสามชั้น', 'ชุด 2 ลูกชิ้น + หมูสามชั้น', 199.00, '1761182102_1760498908_p6.jpg', 20, '2025-09-17 02:58:35'),
-(11, 'สันคอหมูรวมผัก', 'ชุด 3 สันคอหมูรวมผัก', 220.00, '1761182089_1760589547_p1.jpg', 20, '2025-09-17 02:59:44'),
-(12, 'ชุดรวมมิตร MK', 'ชุดรวมมิตร MK ฉ่ำ ๆ', 299.00, '1761182063_3.jfif', 20, '2025-09-17 04:08:58'),
-(13, 'ชาบูน้ำดำ หมู ผักสด', 'ชุด 5 ชาบูน้ำดำ หมู ผักสด', 250.00, '1761182047_1761180305_2.jfif', 20, '2025-09-17 04:15:07'),
-(14, 'ชุดรวมมิตรชาบู', 'รวมมิตร หมู ลูกชิ้น ผักสด', 299.00, '1761182034_1758077915_p6.jpg', 20, '2025-09-18 07:33:32'),
-(15, 'สันคอหมูล้วน', 'สันคอหมูล้วน เกาหลี', 220.00, '1761182020_7.jfif', 20, '2025-09-18 07:42:25'),
-(17, 'ชุดรวมหมู่ชาบู', 'ชุดรวมหมู่ชาบู หมูเนื้อแดง ผักรวม', 299.00, '1761182011_1760511137_p7.jpg', 30, '2025-10-15 03:18:12');
+INSERT INTO `products` (`product_id`, `product_name`, `product_type`, `description`, `price`, `image`, `stock`, `created_at`) VALUES
+(8, 'ชุดผักรวม ชื่นใจ', 1, 'ชุดผักรวมและหมู ชื่นใจ', 280.00, '1761182155_1761180238_3.jfif', 20, '2025-09-11 03:36:39'),
+(9, 'หมูเนื้อแดงรวมผัก', 1, 'ชุด 1 หมูเนื้อแดงรวมผักสด', 250.00, '1761182114_1758077855_p5.jpg', 50, '2025-09-17 02:57:35'),
+(10, 'ชุด 2 ลูกชิ้น + หมูสามชั้น', 1, 'ชุด 2 ลูกชิ้น + หมูสามชั้น', 199.00, '1761182102_1760498908_p6.jpg', 20, '2025-09-17 02:58:35'),
+(11, 'สันคอหมูรวมผัก', 1, 'ชุด 3 สันคอหมูรวมผัก', 220.00, '1761182089_1760589547_p1.jpg', 20, '2025-09-17 02:59:44'),
+(12, 'ชุดรวมมิตร MK', 1, 'ชุดรวมมิตร MK ฉ่ำ ๆ', 299.00, '1761182063_3.jfif', 20, '2025-09-17 04:08:58'),
+(13, 'ชาบูน้ำดำ หมู ผักสด', 1, 'ชุด 5 ชาบูน้ำดำ หมู ผักสด', 250.00, '1761182047_1761180305_2.jfif', 20, '2025-09-17 04:15:07'),
+(14, 'ชุดรวมมิตรชาบู', 1, 'รวมมิตร หมู ลูกชิ้น ผักสด', 299.00, '1761182034_1758077915_p6.jpg', 20, '2025-09-18 07:33:32'),
+(15, 'สันคอหมูล้วน', 1, 'สันคอหมูล้วน เกาหลี', 220.00, '1761182020_7.jfif', 20, '2025-09-18 07:42:25'),
+(17, 'ชุดรวมหมู่ชาบู', 1, 'ชุดรวมหมู่ชาบู หมูเนื้อแดง ผักรวม', 299.00, '1761182011_1760511137_p7.jpg', 30, '2025-10-15 03:18:12');
 
 --
 -- Indexes for dumped tables
@@ -178,6 +198,12 @@ INSERT INTO `products` (`product_id`, `product_name`, `description`, `price`, `i
 ALTER TABLE `admin`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `username` (`username`);
+
+--
+-- Indexes for table `employee`
+--
+ALTER TABLE `employee`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `orders`
@@ -208,6 +234,12 @@ ALTER TABLE `products`
 --
 ALTER TABLE `admin`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `employee`
+--
+ALTER TABLE `employee`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `orders`
